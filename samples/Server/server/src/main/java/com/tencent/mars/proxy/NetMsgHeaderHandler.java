@@ -52,6 +52,7 @@ public class NetMsgHeaderHandler extends ChannelInboundHandlerAdapter {
 
     private static Map<Integer, String> CMD_PATH_MAP = new HashMap<>();
 
+
     static {
         CMD_PATH_MAP.put(Main.CmdID.CMD_ID_HELLO_VALUE, "mars/hello");
         CMD_PATH_MAP.put(Main.CmdID.CMD_ID_SEND_MESSAGE_VALUE, "/mars/sendmessage");
@@ -66,7 +67,7 @@ public class NetMsgHeaderHandler extends ChannelInboundHandlerAdapter {
 
         checker = new ContextTimeoutChecker();
         Timer timer = new Timer();
-        timer.schedule(checker, 15 * 60 * 1000, 15 * 60 * 1000);
+        timer.schedule(checker, 15 * 60 * 1000, 15 * 60 * 1000); //15min 检测一次
     }
 
     @Override
@@ -90,7 +91,7 @@ public class NetMsgHeaderHandler extends ChannelInboundHandlerAdapter {
             if(!ret) return;
 
             linkTimeout.remove(ctx);
-            linkTimeout.put(ctx, System.currentTimeMillis());
+            linkTimeout.put(ctx, System.currentTimeMillis());  //设置当前开始连接的时间
             logger.info(LogUtils.format("client req, cmdId=%d, seq=%d", msgXp.cmdId, msgXp.seq));
 
             final ProxySession proxySession = ProxySession.Manager.get(ctx);
@@ -128,7 +129,7 @@ public class NetMsgHeaderHandler extends ChannelInboundHandlerAdapter {
 
                     }
                     break;
-                case Main.CmdID.CMD_ID_SEND_MESSAGE_VALUE:
+                case Main.CmdID.CMD_ID_SEND_MESSAGE_VALUE:  //发送消息
                     requestDataStream = new ByteArrayInputStream(msgXp.body);
 
                     inputStream = doHttpRequest(webCgi, requestDataStream);
@@ -187,7 +188,7 @@ public class NetMsgHeaderHandler extends ChannelInboundHandlerAdapter {
     }
 
     /**
-     *
+     * 超时检测器
      */
     public class ContextTimeoutChecker extends TimerTask {
 

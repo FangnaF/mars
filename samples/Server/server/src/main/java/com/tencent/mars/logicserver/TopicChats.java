@@ -117,7 +117,7 @@ public class TopicChats {
                             .setContent(content)
                             .setFrom(from)
                             .setTopic(topicName).build();
-                    NetMsgHeader msgXp = new NetMsgHeader();
+                    NetMsgHeader msgXp = new NetMsgHeader();  //处理推送的消息
                     msgXp.cmdId = BaseConstants.MESSAGE_PUSH;
                     msgXp.body = messagePush.toByteArray();
 

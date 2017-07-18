@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 
 /**
  * Simple runtime binding
+ * 简单的 findViewById 的注解框架(运用的是反射实现，会有性能问题)
  * <p/>
  * Created by zhaoyuan on 16/2/29.
  */

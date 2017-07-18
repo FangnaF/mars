@@ -75,6 +75,6 @@ public class MainService implements PushMessageHandler {
 
     @Override
     public void process(PushMessage message) {
-        pushMessages.offer(message);
+        pushMessages.offer(message);  //offer方法在添加元素时，如果发现队列已满无法添加的话，会直接返回false
     }
 }

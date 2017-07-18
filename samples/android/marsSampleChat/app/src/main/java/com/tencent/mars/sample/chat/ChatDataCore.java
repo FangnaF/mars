@@ -22,6 +22,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
 import com.tencent.mars.sample.SampleApplicaton;
 import com.tencent.mars.sample.utils.Constants;
@@ -43,10 +44,11 @@ public class ChatDataCore extends Observable {
     private ConcurrentHashMap<String, List<ChatMsgEntity>> dataArrays = new ConcurrentHashMap<>();
 
     public static ChatDataCore getInstance() {
+        Log.e("ChatDataCore", "ChatDataCore加载时机");
         return inst;
     }
 
-    public ChatDataCore() {
+    private ChatDataCore() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.PUSHACTION);
         SampleApplicaton.getContext().registerReceiver(receiver, intentFilter);
@@ -57,6 +59,11 @@ public class ChatDataCore extends Observable {
         SampleApplicaton.getContext().unregisterReceiver(receiver);
     }
 
+    /**
+     * 按照不同主题来存储数据
+     * @param topic
+     * @return
+     */
     public List<ChatMsgEntity> getTopicDatas(String topic) {
         synchronized (this) {
             if (!dataArrays.containsKey(topic)) {
@@ -70,7 +77,7 @@ public class ChatDataCore extends Observable {
     public void addData(String topic, ChatMsgEntity entity) {
         getTopicDatas(topic).add(entity);
         setChanged();
-        notifyObservers();
+        notifyObservers();   //缓存添加数据时，同时通知观察者更新数据
     }
 
     /**

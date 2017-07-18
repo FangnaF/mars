@@ -22,6 +22,7 @@ import com.tencent.mars.xlog.Log;
 
 /**
  * MarsTaskWrapper using nano protocol buffer encoding
+ * MarsTaskWrapper 使用 nano-protobuf 编码
  * <p></p>
  * Created by zhaoyuan on 16/2/29.
  */

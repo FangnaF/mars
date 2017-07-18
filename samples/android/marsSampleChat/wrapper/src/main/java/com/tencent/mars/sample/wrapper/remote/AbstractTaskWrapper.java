@@ -32,7 +32,7 @@ public abstract class AbstractTaskWrapper extends MarsTaskWrapper.Stub {
 
     public AbstractTaskWrapper() {
 
-        // Reflects task properties
+        // Reflects task properties 通过自身(继承该类的类)标注的注解，用反射获取配置信息
         final TaskProperty taskProperty = this.getClass().getAnnotation(TaskProperty.class);
         if (taskProperty != null) {
             setHttpRequest(taskProperty.host(), taskProperty.path());
@@ -50,6 +50,12 @@ public abstract class AbstractTaskWrapper extends MarsTaskWrapper.Stub {
     @Override
     public abstract void onTaskEnd(int errType, int errCode);
 
+    /**
+     * 设置 http 请求
+     * @param host
+     * @param path
+     * @return
+     */
     public AbstractTaskWrapper setHttpRequest(String host, String path) {
         properties.putString(MarsTaskProperty.OPTIONS_HOST, ("".equals(host) ? null : host));
         properties.putString(MarsTaskProperty.OPTIONS_CGI_PATH, path);

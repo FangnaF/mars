@@ -54,7 +54,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     private static final String TAG = "Mars.Sample.ConversationActivity";
 
-    private static final String CONVERSATION_HOST = "marsopen.cn"; // using preset ports
+    private static final String CONVERSATION_HOST = "localhost"; // using preset ports
 
     private int conversationFilterType = Main.ConversationListRequest.DEFAULT;
 
@@ -187,6 +187,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     /**
      * pull conversation list from server.
+     * 从服务器拉取会话列表
      */
     private void updateConversationTopics() {
         if (taskGetConvList != null) {

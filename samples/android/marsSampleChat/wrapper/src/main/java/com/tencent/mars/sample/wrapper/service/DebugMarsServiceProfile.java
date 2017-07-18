@@ -16,6 +16,7 @@ package com.tencent.mars.sample.wrapper.service;
 
 /**
  * Default profile for testing.
+ * debug 环境的 mars 服务配置类
  * <p></p>
  * Created by zhaoyuan on 2016/11/16.
  */

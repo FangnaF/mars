@@ -43,13 +43,14 @@ public class SampleApplicaton extends Application {
     public static AppLogic.AccountInfo accountInfo = new AppLogic.AccountInfo(
             new Random(System.currentTimeMillis() / 1000).nextInt(), "anonymous");
 
+    //判断进入后是否需要设置昵称
     public static volatile boolean hasSetUserName = false;
 
     private static class SampleMarsServiceProfile extends DebugMarsServiceProfile {
 
         @Override
         public String longLinkHost() {
-            return "marsopen.cn";
+            return "localhost";
         }
     }
 
@@ -58,6 +59,7 @@ public class SampleApplicaton extends Application {
         super.onCreate();
         context = this;
 
+        //加载
         System.loadLibrary("stlport_shared");
         System.loadLibrary("marsxlog");
         openXlog();
@@ -72,7 +74,7 @@ public class SampleApplicaton extends Application {
         // NOTE: MarsServiceProxy is for client/caller
         // Initialize MarsServiceProxy for local client, can be moved to other place
         MarsServiceProxy.init(this, getMainLooper(), null);
-        MarsServiceProxy.inst.accountInfo = accountInfo;
+        MarsServiceProxy.inst.accountInfo = accountInfo;  //账户信息只保存在 Application, 所以杀死应用进程时，不会保留用户信息
 
         // Auto bind all activity event
         ActivityEvent.bind(getApplicationContext());
@@ -91,7 +93,7 @@ public class SampleApplicaton extends Application {
     }
 
     public static  void openXlog() {
-
+        //如果应用中使用了多进程，不要把多个进程的日志输出到同一个文件中，保证每个进程独享一个日志文件。
         int pid = android.os.Process.myPid();
         String processName = null;
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -113,7 +115,7 @@ public class SampleApplicaton extends Application {
 
         if (BuildConfig.DEBUG) {
             Xlog.appenderOpen(Xlog.LEVEL_VERBOSE, Xlog.AppednerModeAsync, "", logPath, logFileName);
-            Xlog.setConsoleLogOpen(true);
+            Xlog.setConsoleLogOpen(true);  //debug 版本下建议把控制台日志打开
         } else {
             Xlog.appenderOpen(Xlog.LEVEL_INFO, Xlog.AppednerModeAsync, "", logPath, logFileName);
             Xlog.setConsoleLogOpen(false);

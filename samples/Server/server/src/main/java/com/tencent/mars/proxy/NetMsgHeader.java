@@ -30,7 +30,7 @@ import java.io.InputStream;
 public class NetMsgHeader {
 
     public static Logger logger = Logger.getLogger(NetMsgHeader.class.getName());
-
+    // TCP Header 一般有 20 个字节，如果启用了 options，header的长度可以达到 60 个字节
     private static final int FIXED_HEADER_SKIP = 4 + 4 + 4 + 4 + 4;
 
     public static final int CMDID_NOOPING = 6;
@@ -57,7 +57,7 @@ public class NetMsgHeader {
 
     /**
      * Decode NetMsgHeader from InputStream
-     *
+     * 从数据流中解码消息头部
      * @param is close input stream yourself
      * @return
      * @throws IOException
@@ -66,7 +66,7 @@ public class NetMsgHeader {
         final DataInputStream dis = new DataInputStream(is);
 
         try {
-            headLength = dis.readInt();
+            headLength = dis.readInt();  //
             clientVersion = dis.readInt();
             cmdId = dis.readInt();
             seq = dis.readInt();
@@ -115,8 +115,8 @@ public class NetMsgHeader {
 
         try {
             final DataOutputStream dos = new DataOutputStream(baos);
-
-            dos.writeInt(headerLength);
+            //注意读写数据的顺序要一致
+            dos.writeInt(headerLength);   //writeInt(int v) 将一个int值以4-byte值形式写入到输出流中先写高字节
             dos.writeInt(CLIENTVERSION);
             dos.writeInt(cmdId);
             dos.writeInt(seq);

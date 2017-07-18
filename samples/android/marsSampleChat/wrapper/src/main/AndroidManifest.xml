@@ -11,6 +11,7 @@
             android:name=".service.MarsServiceNative"
             android:process=":marsservice" />
 
+        <!--注册一个网络切换的广播接收器，源码上实现的-->
         <receiver
             android:name="com.tencent.mars.BaseEvent$ConnectionReceiver"
             android:process=":marsservice" />

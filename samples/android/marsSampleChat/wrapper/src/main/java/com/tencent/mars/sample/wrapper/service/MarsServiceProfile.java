@@ -15,7 +15,7 @@
 package com.tencent.mars.sample.wrapper.service;
 
 /**
- * profile interface.
+ * profile interface.  mars 服务配置接口
  * <p></p>
  * Created by zhaoyuan on 2016/11/16.
  */

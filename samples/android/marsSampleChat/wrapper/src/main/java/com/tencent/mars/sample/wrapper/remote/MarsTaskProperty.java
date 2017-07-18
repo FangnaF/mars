@@ -16,6 +16,7 @@ package com.tencent.mars.sample.wrapper.remote;
 
 /**
  * Constants for Mars Task properties
+ * Mars 任务属性常量值(也就是用在 Bundle 传输数据的 key)
  * <p></p>
  * Created by zhaoyuan on 16/2/29.
  */
@@ -25,10 +26,10 @@ public final class MarsTaskProperty {
 
     }
 
-    public static final String OPTIONS_HOST = "host";
-    public static final String OPTIONS_CGI_PATH = "cgi_path";
-    public static final String OPTIONS_CMD_ID = "cmd_id";
-    public static final String OPTIONS_CHANNEL_SHORT_SUPPORT = "short_support";
-    public static final String OPTIONS_CHANNEL_LONG_SUPPORT = "long_support";
-    public static final String OPTIONS_TASK_ID = "task_id";
+    public static final String OPTIONS_HOST = "host";           //主机名称
+    public static final String OPTIONS_CGI_PATH = "cgi_path";   //公共网关接口路径
+    public static final String OPTIONS_CMD_ID = "cmd_id";       //指令 id
+    public static final String OPTIONS_CHANNEL_SHORT_SUPPORT = "short_support";  //支持短连接
+    public static final String OPTIONS_CHANNEL_LONG_SUPPORT = "long_support";    //支持长连接
+    public static final String OPTIONS_TASK_ID = "task_id";     //任务 id
 }

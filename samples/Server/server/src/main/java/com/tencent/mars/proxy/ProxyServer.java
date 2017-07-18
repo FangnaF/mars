@@ -81,6 +81,10 @@ public class ProxyServer {
         channelHandler = new ChannelInitializerImpl<SocketChannel>();
     }
 
+    /**
+     * Netty流程简析 http://lingnanlu.github.io/2016/08/16/netty-flow-serverbootstrap
+     * @throws Exception
+     */
     public void start() throws Exception {
         try {
             serverBootstrap = new ServerBootstrap();
@@ -116,7 +120,7 @@ public class ProxyServer {
 
     public static void main(String[] args) throws Exception {
 
-        // init non-persistent database
+        // init non-persistent database 初始化非持久化的数据库
         CacheData.connect();
         ProxySession.Manager.connect();
 

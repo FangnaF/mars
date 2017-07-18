@@ -31,6 +31,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Mars Service Proxy for component callers
+ * Mars 服务的代理类（也就是服务关联器），提供以下功能调用：
+ * 1. 设置 Mars 服务处于前后台
+ * 2. 推送消息的监听
+ * 3. 发送或取消 MarsTaskWrapper
  * <p></p>
  * Created by zhaoyuan on 16/2/26.
  */
@@ -43,8 +47,9 @@ public class MarsServiceProxy implements ServiceConnection {
 
     private MarsService service = null;
 
+    //基于链表的堵塞队列，不指定容量时，最大存储容量将是Integer.MAX_VALUE，即可以看作是一个“无界”的阻塞队列
     private LinkedBlockingQueue<MarsTaskWrapper> queue = new LinkedBlockingQueue<>();
-
+    //存储全局的指令ID的 map，使用ConcurrentHashMap具有线程安全特性，锁分段功能
     public static final ConcurrentHashMap<String, Integer> GLOBAL_CMD_ID_MAP = new ConcurrentHashMap<>();
 
     private static Context gContext;
@@ -54,7 +59,7 @@ public class MarsServiceProxy implements ServiceConnection {
 
     private Worker worker;
     public AppLogic.AccountInfo accountInfo;
-
+    //存储发送的消息线程的 map
     private ConcurrentHashMap<Integer, PushMessageHandler> pushMessageHandlerHashMap = new ConcurrentHashMap<>();
     private MarsPushMessageFilter filter = new MarsPushMessageFilter.Stub() {
 
@@ -112,7 +117,7 @@ public class MarsServiceProxy implements ServiceConnection {
 
     public void setForeground(boolean isForeground) {
         try {
-            if (service == null) {
+            if (service == null) {  //如果服务挂掉，则重新开启
                 Log.d(TAG, "try to bind remote mars service, packageName: %s, className: %s", gPackageName, gClassName);
                 Intent i = new Intent().setClassName(gPackageName, gClassName);
                 gContext.startService(i);
@@ -128,6 +133,11 @@ public class MarsServiceProxy implements ServiceConnection {
         }
     }
 
+    /**
+     * 服务连接时，需要注册推送消息过滤器和设置账户信息
+     * @param componentName
+     * @param binder
+     */
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder binder) {
         Log.d(TAG, "remote mars service connected");
@@ -142,6 +152,10 @@ public class MarsServiceProxy implements ServiceConnection {
         }
     }
 
+    /**
+     * 服务被断开连接 （可以在这里设置重连）
+     * @param componentName
+     */
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
         try {
@@ -182,7 +196,7 @@ public class MarsServiceProxy implements ServiceConnection {
 
     private void continueProcessTaskWrappers() {
         try {
-            if (service == null) {
+            if (service == null) {  //服务为 null时，重新开启
                 Log.d(TAG, "try to bind remote mars service, packageName: %s, className: %s", gPackageName, gClassName);
                 Intent i = new Intent().setClassName(gPackageName, gClassName);
                 gContext.startService(i);
@@ -194,8 +208,8 @@ public class MarsServiceProxy implements ServiceConnection {
                 return;
             }
 
-            MarsTaskWrapper taskWrapper = queue.take();
-            if (taskWrapper == null) {
+            MarsTaskWrapper taskWrapper = queue.take(); //取出队列中的 MarsTask
+            if (taskWrapper == null) { //任务为空，跳出方法的执行
                 // Stop, no more task
                 return;
             }
@@ -203,7 +217,7 @@ public class MarsServiceProxy implements ServiceConnection {
             try {
                 Log.d(TAG, "sending task = %s", taskWrapper);
                 final String cgiPath = taskWrapper.getProperties().getString(MarsTaskProperty.OPTIONS_CGI_PATH);
-                final Integer globalCmdID = GLOBAL_CMD_ID_MAP.get(cgiPath);
+                final Integer globalCmdID = GLOBAL_CMD_ID_MAP.get(cgiPath);   //???为什么没有 GLOBAL_CMD_ID_MAP.put()
                 if (globalCmdID != null) {
                     taskWrapper.getProperties().putInt(MarsTaskProperty.OPTIONS_CMD_ID, globalCmdID);
                     Log.i(TAG, "overwrite cmdID with global cmdID Map: %s -> %d", cgiPath, globalCmdID);
@@ -222,14 +236,17 @@ public class MarsServiceProxy implements ServiceConnection {
         }
     }
 
+    /**
+     * 工作线程，每隔50毫秒轮询执行一次处理任务的调用   ???为什么不会造成死循环
+     */
     private static class Worker extends Thread {
 
         @Override
         public void run() {
-
+            int count = 0;
             while (true) {
                 inst.continueProcessTaskWrappers();
-
+                Log.e(TAG, "worker called counts = "+ count++);
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {

@@ -30,11 +30,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tencent.mars.sample.R;
 import com.tencent.mars.sample.SampleApplicaton;
 import com.tencent.mars.sample.core.ActivityEvent;
 import com.tencent.mars.sample.core.ActivityEventConnection;
+import com.tencent.mars.sample.utils.ClickUtils;
 import com.tencent.mars.sample.wrapper.remote.MarsServiceProxy;
 
 import java.util.Observable;
@@ -85,6 +87,7 @@ public class ChatActivity extends AppCompatActivity implements Observer {
             titleText.setText("Mars Sample");
         }
 
+        //恢复 ChatDataCore 缓存的数据（聊天记录）
         adapter = new ChatMsgViewAdapter(this, ChatDataCore.getInstance().getTopicDatas(topicName));
         listView.setAdapter(adapter);
         listView.setSelection(adapter.getCount() - 1);
@@ -94,6 +97,9 @@ public class ChatActivity extends AppCompatActivity implements Observer {
         btnSend.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(ClickUtils.isFastDoubleClick()) {
+                    return;
+                }
                 onClickBtnSend();
             }
         });
@@ -136,6 +142,7 @@ public class ChatActivity extends AppCompatActivity implements Observer {
                         @Override
                         public void onClick(View view) {
                             String nick = editText.getText().toString();
+                            //填写用户昵称后，保存到 Application 的accountInfo中
                             if (nick.length() > 0 && !nick.trim().equals("")) {
                                 SampleApplicaton.accountInfo.userName = nick.trim();
                                 SampleApplicaton.hasSetUserName = true;
@@ -173,7 +180,7 @@ public class ChatActivity extends AppCompatActivity implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         adapter.notifyDataSetChanged();
-        listView.setSelection(listView.getCount() - 1);
+        listView.setSelection(listView.getCount() - 1);  //自动定位到消息列表底部
     }
 
     public void onClickBtnSend() {
@@ -190,27 +197,29 @@ public class ChatActivity extends AppCompatActivity implements Observer {
 
         // Sending using local service proxy
 
-        ChatMsgEntity entity = new ChatMsgEntity();
+        final ChatMsgEntity entity = new ChatMsgEntity();
         entity.setName(SampleApplicaton.accountInfo.userName);
         entity.setDate(ChatDataCore.getDate());
         entity.setMessage(message);
         entity.setMsgType(false);
-        ChatDataCore.getInstance().addData(topicName, entity);
+//        ChatDataCore.getInstance().addData(topicName, entity);
 
-        editTextContent.setText("");
+//        editTextContent.setText("");
 
         MarsServiceProxy.send(new TextMessageTask(topicName, message)
                 .onOK(new Runnable() {
 
                     @Override
-                    public void run() {
-
+                    public void run() {  //改为发送成功再更新消息列表
+                        ChatDataCore.getInstance().addData(topicName, entity);
+                        editTextContent.setText("");
                     }
 
                 }).onError(new Runnable() {
 
                     @Override
                     public void run() {
+                        Toast.makeText(ChatActivity.this, "消息发送失败，请退出程序重新进入！", Toast.LENGTH_SHORT).show();
                     }
 
                 }));

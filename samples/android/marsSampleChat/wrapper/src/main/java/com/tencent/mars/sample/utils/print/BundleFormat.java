@@ -19,7 +19,7 @@ import android.os.Bundle;
 import java.util.Set;
 
 /**
- * Print bundle values
+ * Print bundle values 格式化 Bundle 里面的数据，便于打印输出
  * <p></p>
  * Created by zhaoyuan on 16/2/29.
  */

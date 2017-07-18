@@ -26,6 +26,6 @@ public class PushMessage {
 
     public int cmdId;
 
-    public byte[] buffer;
+    public byte[] buffer;  //根据 cmdId 类型（@see BaseConstants）返回不同的数据
 
 }

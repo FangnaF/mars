@@ -25,6 +25,8 @@ import java.lang.annotation.Target;
  * Define task property
  * <p></p>
  * Created by zhaoyuan on 16/2/29.
+ *
+ * Java 注解: https://fox-legend.github.io/2016/07/06/%E6%B3%A8%E8%A7%A3%EF%BC%88Annotation%EF%BC%89/
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

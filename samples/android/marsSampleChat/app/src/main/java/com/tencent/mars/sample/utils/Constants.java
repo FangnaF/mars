@@ -24,4 +24,6 @@ public class Constants {
 
     public static final int STORAGE_REQUESTCODE = 123;
 
+    public static final String KEY_CHAT_MSG = "key_chat_msg";
+
 }
